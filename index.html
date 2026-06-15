@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub TOTP App</title>
+    <!-- Load modern otpauth library -->
+    <script src="https://cloudflare.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin-top: 50px; background: #eef2f3; color: #333; }
+        .container { background: white; padding: 40px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 320px; }
+        h2 { margin-bottom: 25px; color: #222; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #666; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.2s; }
+        input:focus { border-color: #4a90e2; outline: none; }
+        .code-display { font-size: 42px; font-weight: 700; color: #4a90e2; letter-spacing: 2px; margin: 25px 0 10px 0; font-family: monospace; }
+        .progress-bar-container { background: #eee; width: 100%; height: 6px; border-radius: 3px; overflow: hidden; }
+        .progress-bar { background: #4a90e2; height: 100%; width: 100%; transition: width 1s linear; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>2FA Authenticator</h2>
+    
+    <div class="input-group">
+        <label for="accountName">Account Name</label>
+        <input type="text" id="accountName" value="My Project" placeholder="e.g. GitHub, Google">
+    </div>
+
+    <div class="input-group">
+        <label for="secretKey">Base32 Secret Key</label>
+        <!-- Default sample key: JBSWY3DPEHPK3PXP -->
+        <input type="text" id="secretKey" value="JBSWY3DPEHPK3PXP" placeholder="Paste text key here">
+    </div>
+    
+    <div class="code-display" id="authCode">000000</div>
+    
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+</div>
+
+<script>
+    function updateTOTP() {
+        const secretInput = document.getElementById('secretKey').value.replace(/\s+/g, '').toUpperCase();
+        const codeDiv = document.getElementById('authCode');
+        const progressBar = document.getElementById('progressBar');
+
+        const now = Math.floor(Date.now() / 1000);
+        const timeRemaining = 30 - (now % 30);
+        
+        // Update visual progress bar width smoothly
+        progressBar.style.width = (timeRemaining / 30) * 100 + "%";
+
+        if (secretInput.length >= 8) {
+            try {
+                // Initialize OTP instance using the user's secret string
+                let totp = new OTPAuth.TOTP({
+                    secret: OTPAuth.Secret.fromBase32(secretInput),
+                    digits: 6,
+                    period: 30
+                });
+                
+                codeDiv.innerText = totp.generate();
+            } catch (err) {
+                codeDiv.innerText = "INVALID";
+                codeDiv.style.color = "#ff4d4d";
+                return;
+            }
+        } else {
+            codeDiv.innerText = "WAITING";
+        }
+        codeDiv.style.color = "#4a90e2";
+    }
+
+    // Tick down every single second
+    setInterval(updateTOTP, 1000);
+    updateTOTP();
+</script>
+
+</body>
+</html>
