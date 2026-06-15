@@ -3,21 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <title>TOTP Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-    body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; }
-    input { width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
-    #code { font-size: 48px; margin-top: 20px; text-align: center; }
-    #timer { text-align: center; margin-top: 5px; color: #666; }
+    body {
+        font-family: system-ui, sans-serif;
+        background: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        width: 350px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h2 {
+        margin-top: 0;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-top: 10px;
+    }
+
+    #code {
+        font-size: 48px;
+        font-weight: bold;
+        margin-top: 25px;
+        letter-spacing: 4px;
+        transition: opacity 0.3s ease;
+    }
+
+    .timer-ring {
+        width: 60px;
+        height: 60px;
+        margin: 15px auto 0;
+        border-radius: 50%;
+        border: 6px solid #e5e7eb;
+        border-top-color: #3b82f6;
+        animation: spin 30s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    #timer {
+        margin-top: 10px;
+        color: #555;
+    }
 </style>
 </head>
 <body>
 
-<h2>TOTP Generator</h2>
-<p>Enter your Base32 secret:</p>
-<input id="secret" placeholder="JBSWY3DPEHPK3PXP">
+<div class="card">
+    <h2>TOTP Generator</h2>
+    <input id="secret" placeholder="Enter Base32 Secret">
 
-<div id="code">------</div>
-<div id="timer">Next code in: --</div>
+    <div id="code">------</div>
+    <div class="timer-ring"></div>
+    <div id="timer">Next code in: --</div>
+</div>
 
 <script>
 function base32Decode(input) {
@@ -69,16 +130,18 @@ async function generateTOTP(secret) {
 
 async function update() {
     const secret = document.getElementById("secret").value.trim();
-    const code = await generateTOTP(secret);
-    document.getElementById("code").textContent = code;
+    const codeEl = document.getElementById("code");
+
+    const newCode = await generateTOTP(secret);
+
+    if (codeEl.textContent !== newCode) {
+        codeEl.style.opacity = 0;
+        setTimeout(() => {
+            codeEl.textContent = newCode;
+            codeEl.style.opacity = 1;
+        }, 150);
+    }
 
     const epoch = Math.floor(Date.now() / 1000);
     const remaining = 30 - (epoch % 30);
-    document.getElementById("timer").textContent = "Next code in: " + remaining;
-}
-
-setInterval(update, 500);
-</script>
-
-</body>
-</html>
+    document.getElementById("timer").text
