@@ -1,172 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>TOTP Generator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>TOTP App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+  <style>
     body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, #1e293b, #0f172a);
-        font-family: system-ui, sans-serif;
-        color: white;
+      background: #0f172a;
+      color: white;
+      font-family: system-ui;
+      padding: 20px;
     }
-
     .card {
-        width: 360px;
-        padding: 30px;
-        border-radius: 20px;
-        backdrop-filter: blur(20px);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
     }
-
-    h2 {
-        margin-top: 0;
-        font-weight: 600;
-        letter-spacing: 1px;
-    }
-
     input {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        border-radius: 10px;
-        border: none;
-        margin-top: 10px;
-        outline: none;
-        background: rgba(255,255,255,0.15);
-        color: white;
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.15);
+      color: white;
     }
-
-    #code {
-        font-size: 52px;
-        font-weight: bold;
-        margin-top: 25px;
-        letter-spacing: 6px;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        text-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
+    button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
     }
-
-    .ring {
-        width: 80px;
-        height: 80px;
-        margin: 20px auto 0;
-        border-radius: 50%;
-        border: 6px solid rgba(255,255,255,0.15);
-        position: relative;
-    }
-
-    .ring::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        border: 6px solid transparent;
-        border-top-color: #38bdf8;
-        animation: spin 30s linear infinite;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    #timer {
-        margin-top: 10px;
-        color: #cbd5e1;
-        font-size: 14px;
-    }
-</style>
+  </style>
 </head>
+
 <body>
 
-<div class="card">
-    <h2>TOTP Generator</h2>
-    <input id="secret" placeholder="Enter Base32 Secret">
+<h1>TOTP Authenticator</h1>
 
-    <div id="code">------</div>
-    <div class="ring"></div>
-    <div id="timer">Next code in: --</div>
-</div>
+<div id="auth"></div>
+<div id="app" style="display:none;"></div>
 
-<script>
-function base32Decode(input) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    let bits = "";
-    let output = [];
+<script type="module">
+  import { supabase, signup, login, getUserSalt, saveEncryptedSecret, fetchEncryptedSecrets, deleteEntry } from "./lib/supabase.js";
+  import { generateSaltBase64, deriveKeyFromPassword, encryptSecret, decryptSecret } from "./lib/crypto.js";
+  import { generateTOTP } from "./lib/totp.js";
 
-    input = input.replace(/=+$/, "").toUpperCase();
+  let aesKey = null;
 
-    for (let char of input) {
-        const val = alphabet.indexOf(char);
-        if (val === -1) continue;
-        bits += val.toString(2).padStart(5, "0");
+  function renderAuth() {
+    document.getElementById("auth").innerHTML = `
+      <div class="card">
+        <h2>Login</h2>
+        <input id="email" placeholder="Email">
+        <input id="password" placeholder="Password" type="password">
+        <button id="loginBtn">Login</button>
+        <button id="signupBtn">Sign Up</button>
+      </div>
+    `;
+
+    document.getElementById("loginBtn").onclick = handleLogin;
+    document.getElementById("signupBtn").onclick = handleSignup;
+  }
+
+  async function handleSignup() {
+    const email = email.value;
+    const password = password.value;
+
+    const salt = generateSaltBase64();
+    await signup(email, password, salt);
+
+    alert("Signup complete. Now log in.");
+  }
+
+  async function handleLogin() {
+    const email = email.value;
+    const password = password.value;
+
+    const { error } = await login(email, password);
+    if (error) return alert(error.message);
+
+    const salt = await getUserSalt();
+    aesKey = await deriveKeyFromPassword(password, salt);
+
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    loadEntries();
+  }
+
+  async function loadEntries() {
+    const { data } = await fetchEncryptedSecrets();
+
+    let html = `
+      <div class="card">
+        <h2>Create New Entry</h2>
+        <input id="entryName" placeholder="Name (GitHub, Google...)">
+        <input id="entrySecret" placeholder="Base32 Secret">
+        <button id="createBtn">Create</button>
+      </div>
+    `;
+
+    for (let row of data) {
+      const secret = await decryptSecret(row.secret_encrypted, aesKey);
+      const code = await generateTOTP(secret);
+
+      html += `
+        <div class="card">
+          <h3>${row.name}</h3>
+          <div style="font-size:32px;font-weight:bold;">${code}</div>
+          <button onclick="deleteEntry('${row.id}')">Delete</button>
+        </div>
+      `;
     }
 
-    for (let i = 0; i + 8 <= bits.length; i += 8) {
-        output.push(parseInt(bits.substring(i, i + 8), 2));
-    }
+    document.getElementById("app").innerHTML = html;
 
-    return new Uint8Array(output);
-}
+    document.getElementById("createBtn").onclick = async () => {
+      const name = entryName.value;
+      const secret = entrySecret.value;
 
-async function generateTOTP(secret) {
-    if (!secret) return "------";
+      const encrypted = await encryptSecret(secret, aesKey);
+      await saveEncryptedSecret(name, encrypted);
 
-    const key = base32Decode(secret);
-    const epoch = Math.floor(Date.now() / 1000);
-    const counter = Math.floor(epoch / 30);
+      loadEntries();
+    };
+  }
 
-    const buffer = new ArrayBuffer(8);
-    const view = new DataView(buffer);
-    view.setUint32(4, counter);
-
-    const cryptoKey = await crypto.subtle.importKey(
-        "raw", key, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]
-    );
-
-    const hmac = new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, buffer));
-    const offset = hmac[hmac.length - 1] & 0x0f;
-
-    const binary =
-        ((hmac[offset] & 0x7f) << 24) |
-        ((hmac[offset + 1] & 0xff) << 16) |
-        ((hmac[offset + 2] & 0xff) << 8) |
-        (hmac[offset + 3] & 0xff);
-
-    return (binary % 1_000_000).toString().padStart(6, "0");
-}
-
-async function update() {
-    const secret = document.getElementById("secret").value.trim();
-    const codeEl = document.getElementById("code");
-
-    const newCode = await generateTOTP(secret);
-
-    if (codeEl.textContent !== newCode) {
-        codeEl.style.opacity = 0;
-        codeEl.style.transform = "scale(0.9)";
-        setTimeout(() => {
-            codeEl.textContent = newCode;
-            codeEl.style.opacity = 1;
-            codeEl.style.transform = "scale(1)";
-        }, 150);
-    }
-
-    const epoch = Math.floor(Date.now() / 1000);
-    const remaining = 30 - (epoch % 30);
-    document.getElementById("timer").textContent = "Next code in: " + remaining;
-}
-
-setInterval(update, 500);
+  renderAuth();
 </script>
 
 </body>
