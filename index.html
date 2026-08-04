@@ -8,13 +8,14 @@
 <style>
     body {
         margin: 0;
-        height: 100vh;
+        min-height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
         background: linear-gradient(135deg, #1e293b, #0f172a);
         font-family: system-ui, sans-serif;
         color: white;
+        position: relative;
     }
 
     .card {
@@ -83,6 +84,25 @@
         margin-top: 10px;
         color: #cbd5e1;
         font-size: 14px;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 16px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+    }
+
+    footer a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    footer a:hover {
+        text-decoration: underline;
     }
 </style>
 </head>
@@ -168,10 +188,9 @@ async function update() {
 
 setInterval(update, 500);
 </script>
-    <footer>
-<a href="https://github.com/overlinedev/totp-generator">Click here to view code for this repo</a>
-    </footer>
-
+<footer>
+    <a href="https://github.com/overlinedev/totp-generator">Click here to view code for this repo</a>
+</footer>
 
 </body>
 </html>
