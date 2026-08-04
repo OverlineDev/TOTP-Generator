@@ -26,9 +26,15 @@ Paste your Base32 secret (example: JBSWY3DPEHPK3PXP).
 
 The page will automatically generate a new TOTP code every 30 seconds.
 
-🛡️ Security Notes
+🛡️ Security Notes:
+
+
 This tool is for personal use.
 
 Never commit real secrets to GitHub.
 
 Use a password manager or authenticator app for production accounts.
+
+Features to be added:
+
+URL saving of your TOTP secret key.
