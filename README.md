@@ -1,40 +1,109 @@
-Project: Web‑Based TOTP Generator
-Standards: RFC 6238 (TOTP), RFC 4226 (HOTP), Base32
-Works with: GitHub, Google, Microsoft, AWS, Cloudflare, etc.
+# Web-Based TOTP Authenticator
 
-🔐 What This Is
-This is a simple, client‑side TOTP generator that runs entirely in your browser.
-It never sends secrets anywhere — everything stays local.
+> 🚧 **Development Branch — Version 1.1.0**
 
-✨ Features
-Generates 6‑digit TOTP codes
+This is the development branch of the Web-Based TOTP Authenticator.
 
-Compatible with GitHub, Google, Microsoft, and any RFC‑6238 service
+The `main` branch contains the latest stable release. This branch contains features and changes currently being developed and tested for the upcoming **1.1.0** release.
 
-Base32 secret input
+## 🔐 What This Is
 
-30‑second countdown
+A simple, client-side TOTP authenticator that runs entirely in your browser.
 
-No backend required
+TOTP codes are generated locally using the provided secret keys. The application does not require a backend to generate codes.
 
-Works offline
+The project is designed to work both as a hosted website and as a standalone HTML file that can be downloaded and used offline.
 
-🚀 Usage
-Open index.html in any browser.
+## 🚧 Version 1.1.0 Development
 
-Paste your Base32 secret (example: JBSWY3DPEHPK3PXP).
+### Account Management
 
-The page will automatically generate a new TOTP code every 30 seconds.
+* [x] Multiple TOTP accounts
+* [x] Account names
+* [x] Account notes
+* [x] Add accounts
+* [x] Edit accounts
+* [x] Delete accounts
+* [x] Copy TOTP codes
 
-🛡️ Security Notes:
+### Backups
 
+* [x] JSON backup export
+* [x] JSON backup import
+* [x] Backup validation
+* [x] Import as replacement
+* [x] Import and merge accounts
 
-This tool is for personal use.
+### Testing
 
-Never commit real secrets to GitHub.
+* [ ] Test multiple accounts with real TOTP services
+* [ ] Test account editing
+* [ ] Test account deletion
+* [ ] Test backup export
+* [ ] Test backup import
+* [ ] Test merging backups
+* [ ] Test replacing accounts from backups
+* [ ] Test invalid/corrupted backup files
+* [ ] Test downloaded HTML file offline
+* [ ] Test mobile layout
 
-Use a password manager or authenticator app for production accounts.
+## 📦 Backup Format
 
-Features to be added:
+Backups use JSON and contain the account name, TOTP secret key, and optional notes.
 
-URL saving of your TOTP secret key.
+Example:
+
+```json
+{
+    "name": "GitHub",
+    "key": "YOUR_BASE32_SECRET",
+    "notes": "My GitHub account"
+}
+```
+
+The complete backup file also contains application and version information.
+
+### ⚠️ Important
+
+Backup files contain your TOTP secret keys.
+
+**Do not upload real backup files to GitHub, share them with other people, or store them somewhere you do not trust.**
+
+The current 1.1.0 development version does **not** encrypt backup files.
+
+## 🛡️ Security
+
+This project processes TOTP secrets locally in the browser.
+
+* No backend is required.
+* Secrets are not intentionally sent to a server.
+* Never commit real TOTP secrets to GitHub.
+* Treat exported backup files as sensitive.
+* Use a trusted authenticator or password manager for important production accounts.
+
+## 📋 Standards
+
+* RFC 6238 — Time-Based One-Time Password (TOTP)
+* RFC 4226 — HMAC-Based One-Time Password (HOTP)
+* Base32
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+See [`LICENSE`](LICENSE) for the full license text.
+
+## 🗺️ Future Ideas
+
+These features are **not part of 1.1.0** and may be considered for future versions:
+
+* Persistent local storage
+* `otpauth://` URI support
+* QR code importing
+* Additional privacy and security improvements
+* Progressive Web App support
+
+---
+
+**Current stable version:** 1.0.0
+**Current development version:** 1.1.0
