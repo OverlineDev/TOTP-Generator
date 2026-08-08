@@ -1,40 +1,121 @@
-Project: Web‑Based TOTP Generator
-Standards: RFC 6238 (TOTP), RFC 4226 (HOTP), Base32
-Works with: GitHub, Google, Microsoft, AWS, Cloudflare, etc.
+# Web-Based TOTP Authenticator
 
-🔐 What This Is
-This is a simple, client‑side TOTP generator that runs entirely in your browser.
-It never sends secrets anywhere — everything stays local.
+**Current Version:** 1.0.0
+**Development:** 1.1.0
 
-✨ Features
-Generates 6‑digit TOTP codes
+**Standards:** RFC 6238 (TOTP), RFC 4226 (HOTP), Base32
+**Works with:** GitHub, Google, Microsoft, AWS, Cloudflare, and other RFC 6238-compatible services.
 
-Compatible with GitHub, Google, Microsoft, and any RFC‑6238 service
+## 🔐 What This Is
 
-Base32 secret input
+This is a simple, client-side TOTP authenticator that runs entirely in your browser.
 
-30‑second countdown
+It generates your TOTP codes locally using your secret key. **Your secrets are never sent to a server.**
 
-No backend required
+The project is designed to work both as a hosted web application and as a standalone HTML file that can be downloaded and used offline.
 
-Works offline
+## ✨ Features
 
-🚀 Usage
-Open index.html in any browser.
+* Generates 6-digit TOTP codes
+* RFC 6238-compatible TOTP generation
+* Base32 secret key support
+* 30-second countdown
+* Client-side generation
+* No backend required
+* Works offline
+* Single-file application
+* Open source under the MIT License
 
-Paste your Base32 secret (example: JBSWY3DPEHPK3PXP).
+## 🚧 Development — Version 1.1.0
+
+Version 1.1.0 is currently being developed on the `Development` branch.
+
+Planned features include:
+
+* Multiple TOTP accounts
+* Account names
+* Account notes
+* Add, edit, and delete accounts
+* Copy TOTP codes
+* JSON backup export
+* JSON backup import
+* Backup validation
+
+### Backup Format
+
+Backups will contain account information in JSON format, including:
+
+```json
+{
+    "name": "GitHub",
+    "key": "YOUR_BASE32_SECRET",
+    "notes": "My GitHub account"
+}
+```
+
+**Important:** Backup files contain your TOTP secret keys and should be treated as sensitive information. Never upload real backups to GitHub or share them with other people.
+
+## 🚀 Usage
+
+### Current Version
+
+Open `index.html` in any modern browser.
+
+Enter your Base32 TOTP secret key, for example:
+
+```text
+JBSWY3DPEHPK3PXP
+```
 
 The page will automatically generate a new TOTP code every 30 seconds.
 
-🛡️ Security Notes:
+### Offline Use
 
+You can download `index.html` and open it directly on your computer.
 
-This tool is for personal use.
+No server or internet connection is required to generate TOTP codes.
 
-Never commit real secrets to GitHub.
+## 🛡️ Security Notes
 
-Use a password manager or authenticator app for production accounts.
+This project is intended for personal use.
 
-Features to be added:
+* Never commit real TOTP secret keys to GitHub.
+* Never share your TOTP secret keys publicly.
+* Treat exported backup files as sensitive.
+* Use a password manager or trusted authenticator application for important production accounts.
+* This project does not currently encrypt stored or exported TOTP secrets.
 
-URL saving of your TOTP secret key.
+TOTP secrets are processed locally in your browser and are not intentionally transmitted to a server by this application.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+See [`LICENSE`](LICENSE) for the full license text.
+
+## 🗺️ Roadmap
+
+### 1.0.0 — Current Stable Version
+
+* Single TOTP secret
+* 6-digit TOTP generation
+* Base32 support
+* 30-second countdown
+* Offline support
+
+### 1.1.0 — Development
+
+* Multiple accounts
+* Account management
+* Notes
+* JSON backup and restore
+
+### Future
+
+Potential future features may include:
+
+* Persistent local storage
+* `otpauth://` URI support
+* QR code importing
+* Additional security and privacy improvements
+* Progressive Web App support
