@@ -1,8 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TOTP Generator</title>
+<title>TOTP Authenticator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -16,79 +17,241 @@
         font-family: system-ui, sans-serif;
         color: white;
         position: relative;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 760px;
     }
 
     .card {
-        width: 360px;
         padding: 30px;
         border-radius: 20px;
         backdrop-filter: blur(20px);
         background: rgba(255, 255, 255, 0.08);
         box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        text-align: center;
         border: 1px solid rgba(255,255,255,0.15);
+        box-sizing: border-box;
     }
 
     h2 {
         margin-top: 0;
         font-weight: 600;
         letter-spacing: 1px;
+        text-align: center;
     }
 
-    input {
+    .subtitle {
+        text-align: center;
+        color: #cbd5e1;
+        font-size: 14px;
+        margin-top: -8px;
+        margin-bottom: 24px;
+    }
+
+    .accounts {
+        display: grid;
+        gap: 16px;
+    }
+
+    .account {
+        padding: 20px;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .account-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .account-name {
+        font-size: 20px;
+        font-weight: 600;
+        word-break: break-word;
+    }
+
+    .account-notes {
+        color: #cbd5e1;
+        font-size: 13px;
+        margin-top: 4px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .code {
+        font-size: 44px;
+        font-weight: bold;
+        margin-top: 18px;
+        letter-spacing: 6px;
+        text-align: center;
+        text-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
+    }
+
+    .timer {
+        margin-top: 8px;
+        color: #cbd5e1;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        background: rgba(255,255,255,0.14);
+        color: white;
+        transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    button:hover {
+        background: rgba(255,255,255,0.22);
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+
+    .primary {
+        background: #38bdf8;
+        color: #082f49;
+        font-weight: 600;
+    }
+
+    .primary:hover {
+        background: #7dd3fc;
+    }
+
+    .danger:hover {
+        background: rgba(239,68,68,0.35);
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .empty {
+        text-align: center;
+        color: #cbd5e1;
+        padding: 25px 10px;
+    }
+
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.65);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 100;
+    }
+
+    .modal-backdrop.show {
+        display: flex;
+    }
+
+    .modal {
+        width: 100%;
+        max-width: 430px;
+        padding: 25px;
+        border-radius: 18px;
+        background: #172033;
+        border: 1px solid rgba(255,255,255,0.15);
+        box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+        box-sizing: border-box;
+    }
+
+    .modal h3 {
+        margin-top: 0;
+    }
+
+    label {
+        display: block;
+        margin-top: 14px;
+        margin-bottom: 5px;
+        color: #cbd5e1;
+        font-size: 13px;
+    }
+
+    input,
+    textarea {
         width: 100%;
         padding: 12px;
         font-size: 16px;
         border-radius: 10px;
-        border: none;
-        margin-top: 10px;
+        border: 1px solid rgba(255,255,255,0.12);
         outline: none;
-        background: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.1);
         color: white;
+        box-sizing: border-box;
+        font-family: inherit;
     }
 
-    #code {
-        font-size: 52px;
-        font-weight: bold;
-        margin-top: 25px;
-        letter-spacing: 6px;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        text-shadow: 0 0 12px rgba(0, 200, 255, 0.7);
+    textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+        border-color: #38bdf8;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 20px;
+    }
+
+    .message {
+        display: none;
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(239,68,68,0.15);
+        color: #fecaca;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .message.show {
+        display: block;
     }
 
     .ring {
-        width: 80px;
-        height: 80px;
-        margin: 20px auto 0;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
-        border: 6px solid rgba(255,255,255,0.15);
-        position: relative;
-    }
-
-    .ring::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        border: 6px solid transparent;
-        border-top-color: #38bdf8;
-        animation: spin 30s linear infinite;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    #timer {
-        margin-top: 10px;
-        color: #cbd5e1;
-        font-size: 14px;
+        margin: 10px auto 0;
+        background: #38bdf8;
+        box-shadow: 0 0 10px rgba(56,189,248,0.7);
     }
 
     footer {
         position: fixed;
-        bottom: 16px;
+        bottom: 12px;
         left: 0;
         width: 100%;
         text-align: center;
@@ -96,38 +259,112 @@
     }
 
     footer a {
-        color: #cbd5e1;
+        color: #94a3b8;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     footer a:hover {
         text-decoration: underline;
     }
+
+    @media (max-width: 600px) {
+        .card {
+            padding: 20px;
+        }
+
+        .code {
+            font-size: 36px;
+            letter-spacing: 4px;
+        }
+    }
 </style>
 </head>
+
 <body>
 
-<div class="card">
-    <h2>TOTP Generator</h2>
-    <input id="secret" placeholder="Enter Two-Factor Secret Setup Key here">
+<div class="container">
+    <div class="card">
+        <h2>TOTP Authenticator</h2>
+        <div class="subtitle">Your codes are generated locally in your browser.</div>
 
-    <div id="code">------</div>
-    <div class="ring"></div>
-    <div id="timer">Next code in: --</div>
+        <div id="accounts" class="accounts"></div>
+
+        <div class="toolbar">
+            <button class="primary" onclick="openAddAccount()">+ Add Account</button>
+            <button onclick="exportBackup()">Export Backup</button>
+            <button onclick="document.getElementById('importFile').click()">Import Backup</button>
+        </div>
+
+        <input
+            id="importFile"
+            type="file"
+            accept=".json,application/json"
+            style="display:none"
+            onchange="importBackup(event)"
+        >
+
+        <div id="message" class="message"></div>
+    </div>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+        <h3 id="modalTitle">Add Account</h3>
+
+        <label for="accountName">Account Name</label>
+        <input
+            id="accountName"
+            type="text"
+            placeholder="GitHub"
+            autocomplete="off"
+        >
+
+        <label for="accountKey">TOTP Secret Key</label>
+        <input
+            id="accountKey"
+            type="text"
+            placeholder="JBSWY3DPEHPK3PXP"
+            autocomplete="off"
+            spellcheck="false"
+        >
+
+        <label for="accountNotes">Notes</label>
+        <textarea
+            id="accountNotes"
+            placeholder="Optional notes"
+        ></textarea>
+
+        <div class="modal-actions">
+            <button onclick="closeModal()">Cancel</button>
+            <button class="primary" onclick="saveAccount()">Save</button>
+        </div>
+    </div>
 </div>
 
 <script>
+/*
+ * TOTP GENERATOR
+ * Based on RFC 6238 / RFC 4226
+ */
+
 function base32Decode(input) {
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
     let bits = "";
     let output = [];
 
-    input = input.replace(/=+$/, "").toUpperCase();
+    input = input
+        .replace(/\s/g, "")
+        .replace(/=+$/, "")
+        .toUpperCase();
 
     for (let char of input) {
         const val = alphabet.indexOf(char);
-        if (val === -1) continue;
+
+        if (val === -1) {
+            throw new Error("Invalid Base32 character.");
+        }
+
         bits += val.toString(2).padStart(5, "0");
     }
 
@@ -142,18 +379,34 @@ async function generateTOTP(secret) {
     if (!secret) return "------";
 
     const key = base32Decode(secret);
+
+    if (key.length === 0) {
+        throw new Error("Invalid secret key.");
+    }
+
     const epoch = Math.floor(Date.now() / 1000);
     const counter = Math.floor(epoch / 30);
 
     const buffer = new ArrayBuffer(8);
     const view = new DataView(buffer);
+
     view.setUint32(4, counter);
 
     const cryptoKey = await crypto.subtle.importKey(
-        "raw", key, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]
+        "raw",
+        key,
+        {
+            name: "HMAC",
+            hash: "SHA-1"
+        },
+        false,
+        ["sign"]
     );
 
-    const hmac = new Uint8Array(await crypto.subtle.sign("HMAC", cryptoKey, buffer));
+    const hmac = new Uint8Array(
+        await crypto.subtle.sign("HMAC", cryptoKey, buffer)
+    );
+
     const offset = hmac[hmac.length - 1] & 0x0f;
 
     const binary =
@@ -162,35 +415,463 @@ async function generateTOTP(secret) {
         ((hmac[offset + 2] & 0xff) << 8) |
         (hmac[offset + 3] & 0xff);
 
-    return (binary % 1_000_000).toString().padStart(6, "0");
+    return (binary % 1000000)
+        .toString()
+        .padStart(6, "0");
 }
 
-async function update() {
-    const secret = document.getElementById("secret").value.trim();
-    const codeEl = document.getElementById("code");
 
-    const newCode = await generateTOTP(secret);
+/*
+ * ACCOUNT SYSTEM
+ */
 
-    if (codeEl.textContent !== newCode) {
-        codeEl.style.opacity = 0;
-        codeEl.style.transform = "scale(0.9)";
-        setTimeout(() => {
-            codeEl.textContent = newCode;
-            codeEl.style.opacity = 1;
-            codeEl.style.transform = "scale(1)";
-        }, 150);
+let accounts = [];
+let editingIndex = null;
+
+function openAddAccount() {
+    editingIndex = null;
+
+    document.getElementById("modalTitle").textContent = "Add Account";
+    document.getElementById("accountName").value = "";
+    document.getElementById("accountKey").value = "";
+    document.getElementById("accountNotes").value = "";
+
+    document.getElementById("modalBackdrop").classList.add("show");
+
+    setTimeout(() => {
+        document.getElementById("accountName").focus();
+    }, 50);
+}
+
+function openEditAccount(index) {
+    const account = accounts[index];
+
+    if (!account) return;
+
+    editingIndex = index;
+
+    document.getElementById("modalTitle").textContent = "Edit Account";
+    document.getElementById("accountName").value = account.name;
+    document.getElementById("accountKey").value = account.key;
+    document.getElementById("accountNotes").value = account.notes;
+
+    document.getElementById("modalBackdrop").classList.add("show");
+
+    setTimeout(() => {
+        document.getElementById("accountName").focus();
+    }, 50);
+}
+
+function closeModal() {
+    document.getElementById("modalBackdrop").classList.remove("show");
+    editingIndex = null;
+}
+
+function saveAccount() {
+    const name = document.getElementById("accountName").value.trim();
+    const key = document.getElementById("accountKey").value
+        .replace(/\s/g, "")
+        .trim()
+        .toUpperCase();
+
+    const notes = document.getElementById("accountNotes").value.trim();
+
+    if (!name) {
+        showMessage("Please enter an account name.");
+        return;
     }
 
-    const epoch = Math.floor(Date.now() / 1000);
-    const remaining = 30 - (epoch % 30);
-    document.getElementById("timer").textContent = "Next code in: " + remaining;
+    if (!key) {
+        showMessage("Please enter a TOTP secret key.");
+        return;
+    }
+
+    try {
+        const decoded = base32Decode(key);
+
+        if (decoded.length === 0) {
+            throw new Error();
+        }
+    } catch {
+        showMessage("That does not appear to be a valid Base32 secret.");
+        return;
+    }
+
+    const account = {
+        name,
+        key,
+        notes
+    };
+
+    if (editingIndex === null) {
+        accounts.push(account);
+    } else {
+        accounts[editingIndex] = account;
+    }
+
+    closeModal();
+    renderAccounts();
 }
 
+function deleteAccount(index) {
+    const account = accounts[index];
+
+    if (!account) return;
+
+    const confirmed = confirm(
+        `Delete "${account.name}"?\n\nThis cannot be undone unless you have a backup.`
+    );
+
+    if (!confirmed) return;
+
+    accounts.splice(index, 1);
+    renderAccounts();
+}
+
+
+/*
+ * DISPLAY ACCOUNTS
+ */
+
+function renderAccounts() {
+    const container = document.getElementById("accounts");
+
+    container.innerHTML = "";
+
+    if (accounts.length === 0) {
+        container.innerHTML = `
+            <div class="empty">
+                No accounts yet.<br>
+                Add an account to get started.
+            </div>
+        `;
+
+        return;
+    }
+
+    accounts.forEach((account, index) => {
+        const card = document.createElement("div");
+        card.className = "account";
+
+        const header = document.createElement("div");
+        header.className = "account-header";
+
+        const info = document.createElement("div");
+
+        const name = document.createElement("div");
+        name.className = "account-name";
+        name.textContent = account.name;
+
+        info.appendChild(name);
+
+        if (account.notes) {
+            const notes = document.createElement("div");
+            notes.className = "account-notes";
+            notes.textContent = account.notes;
+            info.appendChild(notes);
+        }
+
+        header.appendChild(info);
+
+        const code = document.createElement("div");
+        code.className = "code";
+        code.id = `code-${index}`;
+        code.textContent = "------";
+
+        const ring = document.createElement("div");
+        ring.className = "ring";
+
+        const timer = document.createElement("div");
+        timer.className = "timer";
+        timer.id = `timer-${index}`;
+        timer.textContent = "Next code in: --";
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const copyButton = document.createElement("button");
+        copyButton.textContent = "Copy";
+        copyButton.onclick = () => copyCode(index);
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.onclick = () => openEditAccount(index);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "danger";
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = () => deleteAccount(index);
+
+        actions.appendChild(copyButton);
+        actions.appendChild(editButton);
+        actions.appendChild(deleteButton);
+
+        card.appendChild(header);
+        card.appendChild(code);
+        card.appendChild(ring);
+        card.appendChild(timer);
+        card.appendChild(actions);
+
+        container.appendChild(card);
+    });
+
+    update();
+}
+
+
+/*
+ * TOTP UPDATES
+ */
+
+async function update() {
+    const epoch = Math.floor(Date.now() / 1000);
+    const remaining = 30 - (epoch % 30);
+
+    for (let i = 0; i < accounts.length; i++) {
+        const account = accounts[i];
+        const codeEl = document.getElementById(`code-${i}`);
+        const timerEl = document.getElementById(`timer-${i}`);
+
+        if (!codeEl || !timerEl) continue;
+
+        try {
+            const newCode = await generateTOTP(account.key);
+
+            if (codeEl.textContent !== newCode) {
+                codeEl.style.opacity = 0;
+                codeEl.style.transform = "scale(0.9)";
+
+                setTimeout(() => {
+                    if (!document.body.contains(codeEl)) return;
+
+                    codeEl.textContent = newCode;
+                    codeEl.style.opacity = 1;
+                    codeEl.style.transform = "scale(1)";
+                }, 150);
+            }
+
+            timerEl.textContent = "Next code in: " + remaining;
+        } catch {
+            codeEl.textContent = "ERROR";
+            timerEl.textContent = "Invalid secret key";
+        }
+    }
+}
+
+
+/*
+ * COPY
+ */
+
+async function copyCode(index) {
+    const account = accounts[index];
+
+    if (!account) return;
+
+    try {
+        const code = await generateTOTP(account.key);
+
+        await navigator.clipboard.writeText(code);
+
+        showMessage(`Copied ${account.name}'s code.`);
+
+        /*
+         * Clear the clipboard after 30 seconds if possible.
+         * This only affects the clipboard entry created by this app.
+         */
+        setTimeout(async () => {
+            try {
+                const currentClipboard = await navigator.clipboard.readText();
+
+                if (currentClipboard === code) {
+                    await navigator.clipboard.writeText("");
+                }
+            } catch {
+                // Clipboard permissions may prevent this.
+            }
+        }, 30000);
+
+    } catch {
+        showMessage("Unable to copy the code.");
+    }
+}
+
+
+/*
+ * BACKUPS
+ */
+
+function exportBackup() {
+    if (accounts.length === 0) {
+        showMessage("There are no accounts to export.");
+        return;
+    }
+
+    const backup = {
+        app: "TOTP Generator",
+        version: "1.1.0",
+        readonly: true,
+        accounts: accounts.map(account => ({
+            name: account.name,
+            key: account.key,
+            notes: account.notes
+        }))
+    };
+
+    const json = JSON.stringify(backup, null, 4);
+
+    const blob = new Blob(
+        [json],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "totp-backup.json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    showMessage("Backup exported.");
+}
+
+function importBackup(event) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+        try {
+            const backup = JSON.parse(reader.result);
+
+            if (!backup || typeof backup !== "object") {
+                throw new Error("Invalid backup.");
+            }
+
+            if (!Array.isArray(backup.accounts)) {
+                throw new Error("Backup does not contain accounts.");
+            }
+
+            const importedAccounts = backup.accounts.map(account => {
+                if (!account || typeof account !== "object") {
+                    throw new Error("Invalid account.");
+                }
+
+                if (
+                    typeof account.name !== "string" ||
+                    typeof account.key !== "string" ||
+                    typeof account.notes !== "string"
+                ) {
+                    throw new Error("Invalid account format.");
+                }
+
+                const key = account.key
+                    .replace(/\s/g, "")
+                    .trim()
+                    .toUpperCase();
+
+                const decoded = base32Decode(key);
+
+                if (!key || decoded.length === 0) {
+                    throw new Error("Invalid Base32 key.");
+                }
+
+                return {
+                    name: account.name.trim(),
+                    key,
+                    notes: account.notes.trim()
+                };
+            });
+
+            const replace = confirm(
+                "Import this backup?\n\n" +
+                "OK = Replace your current accounts\n" +
+                "Cancel = Keep your current accounts"
+            );
+
+            if (replace) {
+                accounts = importedAccounts;
+            } else {
+                accounts = accounts.concat(importedAccounts);
+            }
+
+            renderAccounts();
+
+            showMessage(
+                `${importedAccounts.length} account(s) imported.`
+            );
+
+        } catch (error) {
+            showMessage(
+                "Could not import backup. Make sure it is a valid TOTP Generator backup."
+            );
+        }
+
+        event.target.value = "";
+    };
+
+    reader.onerror = () => {
+        showMessage("Could not read the backup file.");
+        event.target.value = "";
+    };
+
+    reader.readAsText(file);
+}
+
+
+/*
+ * MESSAGES
+ */
+
+let messageTimeout;
+
+function showMessage(text) {
+    const message = document.getElementById("message");
+
+    message.textContent = text;
+    message.classList.add("show");
+
+    clearTimeout(messageTimeout);
+
+    messageTimeout = setTimeout(() => {
+        message.classList.remove("show");
+    }, 3500);
+}
+
+
+/*
+ * CLOSE MODAL WHEN CLICKING OUTSIDE
+ */
+
+document.getElementById("modalBackdrop").addEventListener("click", event => {
+    if (event.target === event.currentTarget) {
+        closeModal();
+    }
+});
+
+
+/*
+ * START
+ */
+
+renderAccounts();
 setInterval(update, 500);
+update();
 </script>
+
 <footer>
-    <a href="https://github.com/overlinedev/totp-generator">Click here to view code for this repo</a>
+    <a href="https://github.com/overlinedev/totp-generator">
+        Click here to view code for this repo
+    </a>
 </footer>
 
 </body>
 </html>
+```
