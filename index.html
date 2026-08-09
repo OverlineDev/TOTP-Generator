@@ -635,7 +635,15 @@ async function update() {
         if (!codeEl || !timerEl) continue;
 
         try {
-            const newCode = await generateTOTP(account.key);
+            let newCode = codeEl.textContent;
+            const shouldRefreshCode =
+                newCode === "------" ||
+                newCode === "ERROR" ||
+                remaining === 30;
+
+            if (shouldRefreshCode) {
+                newCode = await generateTOTP(account.key);
+            }
 
             if (codeEl.textContent !== newCode) {
                 codeEl.style.opacity = 0;
