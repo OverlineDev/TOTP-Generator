@@ -124,7 +124,7 @@ This project is designed to process TOTP secrets locally in your browser.
 * Keep your backup files secure.
 * For important production accounts, consider using a trusted authenticator or password manager.
 
-This project does not currently provide encryption for stored or exported TOTP secrets.
+This project does not currently provide encryption for exported TOTP secrets.
 
 ## 📋 Standards
 
