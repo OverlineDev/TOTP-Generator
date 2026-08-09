@@ -1,55 +1,71 @@
 # Web-Based TOTP Authenticator
 
-> 🚧 **Development Branch — Version 1.1.0**
+**Current Version: 1.1.0**
 
-This is the development branch of the Web-Based TOTP Authenticator.
-
-The `main` branch contains the latest stable release. This branch contains features and changes currently being developed and tested for the upcoming **1.1.0** release.
+**Standards:** RFC 6238 (TOTP), RFC 4226 (HOTP), Base32
+**Works with:** GitHub, Google, Microsoft, AWS, Cloudflare, and other RFC 6238-compatible services.
 
 ## 🔐 What This Is
 
-A simple, client-side TOTP authenticator that runs entirely in your browser.
+This is a simple, client-side TOTP authenticator that runs entirely in your browser.
 
-TOTP codes are generated locally using the provided secret keys. The application does not require a backend to generate codes.
+TOTP codes are generated locally using your secret keys. Your secrets are not intentionally sent to a server, and no backend is required.
 
-The project is designed to work both as a hosted website and as a standalone HTML file that can be downloaded and used offline.
+The project works both as a hosted web application and as a standalone HTML file that can be downloaded and used offline.
 
-## 🚧 Version 1.1.0 Development
+## ✨ Features
 
-### Account Management
+* Multiple TOTP accounts
+* Account names
+* Account notes
+* Add, edit, and delete accounts
+* 6-digit TOTP codes
+* RFC 6238-compatible TOTP generation
+* Base32 secret key support
+* 30-second countdown
+* Copy TOTP codes
+* JSON backup export
+* JSON backup import
+* Backup validation
+* Import and merge accounts
+* No backend required
+* Works offline
+* Single-file application
+* Open source under the MIT License
 
-* [x] Multiple TOTP accounts
-* [x] Account names
-* [x] Account notes
-* [x] Add accounts
-* [x] Edit accounts
-* [x] Delete accounts
-* [x] Copy TOTP codes
+## 🚀 Usage
 
-### Backups
+Open `index.html` in any modern browser.
 
-* [x] JSON backup export
-* [x] JSON backup import
-* [x] Backup validation
-* [x] Import as replacement
-* [x] Import and merge accounts
+### Add an Account
 
-### Testing
+1. Click **Add Account**.
+2. Enter an account name.
+3. Enter the Base32 TOTP secret key.
+4. Optionally add notes.
+5. Click **Save**.
 
-* [ ] Test multiple accounts with real TOTP services
-* [ ] Test account editing
-* [ ] Test account deletion
-* [ ] Test backup export
-* [ ] Test backup import
-* [ ] Test merging backups
-* [ ] Test replacing accounts from backups
-* [ ] Test invalid/corrupted backup files
-* [ ] Test downloaded HTML file offline
-* [ ] Test mobile layout
+The authenticator will automatically generate a new 6-digit code every 30 seconds.
 
-## 📦 Backup Format
+Example Base32 secret:
 
-Backups use JSON and contain the account name, TOTP secret key, and optional notes.
+```text
+JBSWY3DPEHPK3PXP
+```
+
+### Editing Accounts
+
+Use the **Edit** button on an account to change its name, secret key, or notes.
+
+### Copying Codes
+
+Use the **Copy** button to copy the current TOTP code to your clipboard.
+
+## 💾 Backups
+
+You can export your accounts using **Export Backup**.
+
+Backups are stored as JSON files and contain the account name, TOTP secret key, and notes.
 
 Example:
 
@@ -61,31 +77,62 @@ Example:
 }
 ```
 
-The complete backup file also contains application and version information.
+The complete backup also includes application and version information.
 
-### ⚠️ Important
+### Importing Backups
 
-Backup files contain your TOTP secret keys.
+Use **Import Backup** to restore accounts from a previously exported JSON file.
 
-**Do not upload real backup files to GitHub, share them with other people, or store them somewhere you do not trust.**
+When importing a backup, you can choose to:
 
-The current 1.1.0 development version does **not** encrypt backup files.
+* Replace your current accounts
+* Merge the imported accounts with your existing accounts
 
-## 🛡️ Security
+Imported backups are validated before being added.
 
-This project processes TOTP secrets locally in the browser.
+### ⚠️ Backup Security
+
+Backup files contain your actual TOTP secret keys.
+
+**Treat backup files like passwords.**
+
+Do not:
+
+* Upload real backups to GitHub
+* Share backups with other people
+* Upload backups to untrusted websites
+* Store backups somewhere you do not trust
+
+Backups are **not encrypted** in the current version.
+
+## 📴 Offline Use
+
+The application can be downloaded and opened directly as an HTML file.
+
+No internet connection or backend server is required to generate TOTP codes.
+
+This also means you can keep a local copy of the application and use it offline.
+
+## 🛡️ Security Notes
+
+This project is designed to process TOTP secrets locally in your browser.
 
 * No backend is required.
-* Secrets are not intentionally sent to a server.
+* Secrets are not intentionally transmitted by the application.
 * Never commit real TOTP secrets to GitHub.
 * Treat exported backup files as sensitive.
-* Use a trusted authenticator or password manager for important production accounts.
+* Keep your backup files secure.
+* For important production accounts, consider using a trusted authenticator or password manager.
+
+This project does not currently provide encryption for stored or exported TOTP secrets.
 
 ## 📋 Standards
 
-* RFC 6238 — Time-Based One-Time Password (TOTP)
-* RFC 4226 — HMAC-Based One-Time Password (HOTP)
-* Base32
+This project uses:
+
+* **RFC 6238** — Time-Based One-Time Password (TOTP)
+* **RFC 4226** — HMAC-Based One-Time Password (HOTP)
+* **Base32** — Used for TOTP secret keys
 
 ## 📄 License
 
@@ -95,7 +142,7 @@ See [`LICENSE`](LICENSE) for the full license text.
 
 ## 🗺️ Future Ideas
 
-These features are **not part of 1.1.0** and may be considered for future versions:
+Possible future improvements include:
 
 * Persistent local storage
 * `otpauth://` URI support
@@ -105,5 +152,5 @@ These features are **not part of 1.1.0** and may be considered for future versio
 
 ---
 
-**Current stable version:** 1.0.0
-**Current development version:** 1.1.0
+**Version:** 1.1.0
+**Status:** Stable
