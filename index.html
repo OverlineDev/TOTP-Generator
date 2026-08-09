@@ -767,7 +767,7 @@ function importBackup(event) {
                 if (
                     typeof account.name !== "string" ||
                     typeof account.key !== "string" ||
-                    typeof account.notes !== "string"
+                    (account.notes != null && typeof account.notes !== "string")
                 ) {
                     throw new Error("Invalid account format.");
                 }
